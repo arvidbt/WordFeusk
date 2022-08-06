@@ -61,6 +61,7 @@
       </div>
     </div>
   </div>
+  <!-- <div class="footer-container"><p class="help-text">Made by Arvid Bergman Thörn</p></div> -->
 </template>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,900&display=swap');
@@ -110,13 +111,14 @@ body {
   align-items: center;
   border-radius: 7.5px;
   margin-top: 10px;
+  /* position: fixed; */
 }
 
 .background-container {
   margin-top: 10px;
   overflow-y: auto;
   background: #0082F0;
-  height: 80vh;
+  height: 75vh;
   padding: 10px;
   border-radius: 7.5px;
 }
@@ -194,23 +196,19 @@ body {
   cursor: pointer;
 }
 
-/* width */
 ::-webkit-scrollbar {
   width: 10px;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
   background: #0082F0;
   border-radius: 7.5px;
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
   background: #199EF3;
 }
 
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
@@ -219,23 +217,19 @@ body {
 
 
 <script>
-
-
 export default {
   name: 'App',
 
   mounted() {
-    this.loadSAOLDictionary();
+    this.loadWordlist();
     document.getElementById('letter-input').addEventListener('input', () => {
-      this.getWords();
+      this.searchWords();
     })
   },
   data() {
     return {
       message: '',
-      eligableWords: null,
       maxWordLength: 0,
-      isAWord: false,
       filtered_words: null,
       accepted_words: null,
       seven_letter_words: [],
@@ -253,76 +247,63 @@ export default {
       this.showPoints = !this.showPoints;
     },
     linkTo(word) {
-      const link = "https://synonymer.se/sv-syn/" + word;
+      const link = "https://synonymer.se/sv-syn/" + word[0];
       window.open(link, '_blank').focus();
     },
     calculateWordPoints() {
-      const one_pointers = ['A', 'D', 'E', 'I', 'N', 'R', 'S', 'T'];
-      const two_pointers = ['G', 'L', 'O'];
-      const three_pointers = ['B', 'F', 'H', 'K', 'M', 'V'];
-      const four_pointers = ['P', 'U', 'Å', 'Ä', 'Ö'];
-      const seven_pointers = ['J', 'Y'];
-      const eight_pointers = ['C','X', 'Z']
+      const one_pointers    = ['A', 'D', 'E', 'I', 'N', 'R', 'S', 'T'];
+      const two_pointers    = ['G', 'L', 'O'];
+      const three_pointers  = ['B', 'F', 'H', 'K', 'M', 'V'];
+      const four_pointers   = ['P', 'U', 'Å', 'Ä', 'Ö'];
+      const seven_pointers  = ['J', 'Y'];
+      const eight_pointers  = ['C','X', 'Z']
       for(const i in this.accepted_words) {
         let word = this.accepted_words[i]
         let points = 0
         for(const j in word) {
-          if(one_pointers.includes(word[j])) { points += 1}
-          else if(two_pointers.includes(word[j])) { points += 2}
+          if(one_pointers.includes(word[j]))        { points += 1}
+          else if(two_pointers.includes(word[j]))   { points += 2}
           else if(three_pointers.includes(word[j])) { points += 3}
-          else if(four_pointers.includes(word[j])) { points += 4}
+          else if(four_pointers.includes(word[j]))  { points += 4}
           else if(seven_pointers.includes(word[j])) { points += 7}
           else if(eight_pointers.includes(word[j])) { points += 8}
         }
-        // console.log(word + " " + points.toString())
         this.accepted_words[i] = word + " " + points.toString();
       }
     },
-    filterIllegalDuplicates() {
+    illegalDuplicates(i, j) {
+      const word   = this.accepted_words[i];
+      const letter = this.accepted_words[i][j]
+      return (this.message.split(letter).length - 1) < (word.split(letter).length - 1)
+    },
+
+    illegalLetters(i, j) {
+      const letter = this.filtered_words[i][j];
+      return !this.message.includes(letter)
+    },
+
+    filter(array, type) {
       let data = []
-      let wildcard = this.message.includes('?')
-      for (const i in this.accepted_words) {
-        let accept = wildcard ? 1 : 0;
-        for(const j in this.accepted_words[i]) {
-          if((this.message.split(this.accepted_words[i][j]).length - 1) < (this.accepted_words[i].split(this.accepted_words[i][j]).length - 1)) {
+      let wildcard = this.message.split('?').length;
+      for (const i in array) {
+        let accept = wildcard > 0 ? wildcard : 0;
+        for(const j in array[i]) {
+          if(type === 'letter' ? this.illegalLetters(i, j) : this.illegalDuplicates(i, j)) {
             break;
           }
           else {
-            accept++
-            if(accept == this.accepted_words[i].length) {
-              data.push(this.accepted_words[i])
+            if(accept++ == array[i].length) {
+              data.push(array[i])
             }
           }
         }
       }
-
       return data;
     },
 
-    filterWords() {
-      let data = []
-      const wildcard = this.message.includes('?')
-      for( const i in this.filtered_words) {
-        let accepted = wildcard ? 1 : 0;
-        for( const j in this.filtered_words[i]) {
-          if(!this.message.includes(this.filtered_words[i][j])) {
-            break;
-          }
-          else {
-            accepted++
-            if(accepted === this.filtered_words[i].length) {
-              data.push(this.filtered_words[i])
-            }
-          }
-        }
-      }
-      this.accepted_words = data
-      return this.filterIllegalDuplicates();
-    },
-
-    getWordsContainingLetters() {
-      this.filtered_words = this.eligableWords;
-      this.accepted_words = this.filterWords()
+    getWords() {
+      this.accepted_words = this.filter(this.filtered_words, 'letter');
+      this.accepted_words = this.filter(this.accepted_words, 'duplicate');
       this.calculateWordPoints();
       this.sortWords();
     },
@@ -355,13 +336,15 @@ export default {
         }
       }
     },
-
     canCreateWord() {
       return this.accepted_words.length > 0
     },
-
-    async loadSAOLDictionary() {
-      this.eligableWords = await require('../wordlist.json'); 
+    async loadWordlist() {
+      this.filtered_words = await require('../wordlist.json'); 
+      this.filtered_words = this.filtered_words.filter(word => word.length <= this.maxWordLength && word.length > 1);
+      this.filtered_words = this.filtered_words.map(word => {
+        return word.toUpperCase();
+      })
     },
     getMaxWordLength() {
       return this.message.length;
@@ -375,19 +358,15 @@ export default {
       this.seven_letter_words = []
       this.eight_or_more_letter_words = []
     },
-    getWords() {
+    searchWords() {
       if(!this.message) {
         return;
       }
       this.clearLists();
       this.maxWordLength = this.getMaxWordLength();
       this.message = this.message.toUpperCase();
-      this.eligableWords = this.eligableWords.filter(word => word.length <= this.maxWordLength && word.length > 1);
-      this.eligableWords = this.eligableWords.map(word => {
-        return word.toUpperCase();
-      })
-      this.getWordsContainingLetters();
-      this.eligableWords = this.loadSAOLDictionary();
+      this.getWords();
+      this.filtered_words = this.loadWordlist();
 
     },
   },

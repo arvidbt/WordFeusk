@@ -7,10 +7,11 @@
     <img @click="toggleAdvancedMode()" class="search-button" src="https://img.icons8.com/material-outlined/24/FFFFFF/advanced-search.png"/>
     <p class="help-text" style="margin-left: 5px; color: #F1C40F;"> BETA</p>
   <!-- <button @click="toggleAdvancedMode()" class="search-button">Advancerad Version</button> -->
-    <!-- <p class="help-text">Skriv in dina bokstäver i sökrutan nedan och se vilka ord du kan skapa.</p> -->
+  </div>
+  <div class="footer-container" style="margin-top: -10px;">
+    <p class="help-text" style="color: #B9DEFE; font-size: 12px;">- STRIKT <span style="color: #F1C40F">ORDLISTA</span><br>- FÖR BLANKA BRICKOR, ANVÄND <span style="color: #F1C40F">?</span></p>
   </div>
   <div class="footer-container">
-    <!-- <p class="help-text">Skriv in dina bokstäver i sökrutan och se vilka ord du kan skapa. <br>(? för blanka rutor).</p> -->
     <input autocomplete="off" v-show="this.showAdvanced" type="text" id="begin-input" class="adv-search-box" style="margin-left: 15px;" v-model="beginsWith" placeholder="BÖRJAR MED"/>
     <input autocomplete="off" type="text" id="letter-input" class="search-box" v-model="message" placeholder="DINA BOKSTÄVER.."/>
     <input autocomplete="off" v-show="this.showAdvanced" type="text" id="end-input" class="adv-search-box" style="margin-right: 15px;"  v-model="endWith" placeholder="SLUTAR MED"/>

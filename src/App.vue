@@ -2,7 +2,7 @@
 <template>
   <div class="title-container">
     <h1 class="title-text">WordFeusk</h1>
-    <!-- <button @click="toggleAdvancedMode()" class="search-button">Advancerad Version</button> -->
+    <button @click="toggleAdvancedMode()" class="search-button">Advancerad Version</button>
     <!-- <p class="help-text">Skriv in dina bokstäver i sökrutan nedan och se vilka ord du kan skapa.</p> -->
   </div>
   <div class="footer-container">
@@ -13,9 +13,9 @@
   <div v-show="this.showAdvanced" class="footer-container">
     <!-- <p class="help-text">Skriv in dina bokstäver i sökrutan nedan och se vilka ord du kan skapa.</p> -->
     <input type="text" id="begin-input" class="search-box" v-model="beginsWith"/>
-    <input type="text" id="end-input" class="search-box" v-model="endsWith"/>
+    <input type="text" id="end-input" class="search-box" v-model="endWith"/>
   </div>
-  <div class="background-container">
+  <div class="background-container" id="bck-grd">
     <!-- <button class="search-button" @click="this.toggleShowPoints()">Klicka för se poäng för orden.</button> -->
     <div style="margin-top: 15px;">
       <p class="list-titles" v-if="this.eight_or_more_letter_words.length > 0">Det finns {{ this.eight_or_more_letter_words.length }} ord med 8+ bokstäver.</p>
@@ -247,8 +247,9 @@ export default {
   data() {
     return {
       message: '',
+      letters: '',
       beginsWith: '',
-      endsWith: '',
+      endWith: '',
       maxWordLength: 0,
       filtered_words: null,
       accepted_words: null,
@@ -261,11 +262,13 @@ export default {
       eight_or_more_letter_words: [],
       showPoints: true,
       showAdvanced: false,
+      added: 0,
     }
   },
   methods:  {
     toggleAdvancedMode() {
       this.showAdvanced = !this.showAdvanced;
+      this.added = 1;
     },
     toggleShowPoints() {
       this.showPoints = !this.showPoints;
@@ -298,17 +301,17 @@ export default {
     illegalDuplicates(i, j) {
       const word   = this.accepted_words[i];
       const letter = this.accepted_words[i][j]
-      return (this.message.split(letter).length - 1) < (word.split(letter).length - 1)
+      return (this.letters.split(letter).length - 1) < (word.split(letter).length - 1)
     },
 
     illegalLetters(i, j) {
       const letter = this.filtered_words[i][j];
-      return !this.message.includes(letter);
+      return !this.letters.includes(letter);
     },
 
     filter(array, type) {
       let data = []
-      let wildcard = this.message.split('?').length;
+      let wildcard = this.letters.split('?').length;
       for (const i in array) {
         let accept = wildcard > 0 ? wildcard : 0;
         for(const j in array[i]) {
@@ -324,16 +327,42 @@ export default {
       }
       return data;
     },
-    // eslint-disable-next-line no-unused-vars
-    advancedFilter() {
+    filterAdvanced() {
+      const begin = this.beginsWith.length > 0;
+      const end   = this.endWith.length > 0;
+      const both  = begin && end;
+      if(both) {
+        this.accepted_words = this.accepted_words.filter(word => word.startsWith(this.beginsWith) && word.endsWith(this.endWith));
+      } else if(begin) {
+        this.accepted_words = this.accepted_words.filter(word => word.startsWith(this.beginsWith))
+      } else if(end) {
+        this.accepted_words = this.accepted_words.filter(word => word.endsWith(this.endWith))
+      }
+    },
 
+    applyAdvancedFilter() {
+      const begin = this.beginsWith.length > 0;
+      const end   = this.endWith.length > 0;
+      const both  = begin && end;
+      const add = this.letters === this.message;
+
+      if(both && add) {
+        this.letters = this.beginsWith.concat(this.message.concat(this.endWith));
+      } else if(begin && add) {
+        this.letters = this.beginsWith.concat(this.message);
+      } else if(end && add) {
+        this.letters = this.message.concat(this.endWith);
+      }
     },
 
     getWordsContainingLetters() {
+      if(this.showAdvanced) {
+        this.applyAdvancedFilter();
+      }
       this.accepted_words = this.filter(this.filtered_words, 'letter');
       this.accepted_words = this.filter(this.accepted_words, 'duplicate');
       if(this.showAdvanced) {
-        this.advancedFilter();
+        this.filterAdvanced(this.accepted_words);
       }
       this.calculateWordPoints();
       this.sortWords();
@@ -374,7 +403,7 @@ export default {
       this.filtered_words = await require('../wordlist.json'); 
     },
     getMaxWordLength() {
-      return this.message.length + this.beginsWith.length + this.endsWith.length;
+      return this.message.length + this.beginsWith.length + this.endWith.length;
     },
     clearLists() {
       this.two_letter_words = []
@@ -391,9 +420,9 @@ export default {
       }
       this.clearLists();
       this.maxWordLength = this.getMaxWordLength();
-      this.message = this.message.toUpperCase();
+      this.letters = this.message.toUpperCase();
       this.beginsWith = this.beginsWith.toUpperCase();
-      this.endsWith = this.endsWith.toUpperCase();
+      this.endWith = this.endWith.toUpperCase();
       this.filtered_words = this.filtered_words.filter(word => word.length <= this.maxWordLength && word.length > 1);
       this.filtered_words = this.filtered_words.map(word => {
         return word.toUpperCase();

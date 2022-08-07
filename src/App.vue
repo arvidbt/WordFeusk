@@ -9,7 +9,7 @@
   <!-- <button @click="toggleAdvancedMode()" class="search-button">Advancerad Version</button> -->
   </div>
   <div class="footer-container" style="margin-top: -10px;">
-    <p class="help-text" style="color: #B9DEFE; font-size: 12px;">- STRIKT <span style="color: #F1C40F">ORDLISTA</span><br>- FÖR BLANKA BRICKOR, ANVÄND <span style="color: #F1C40F">?</span></p>
+    <p class="help-text" style="color: #B9DEFE; font-size: 12px;"><span style="color: #F1C40F">-</span> STRIKT ORDLISTA<br><span style="color: #F1C40F;">-</span> BLANKA BRICKOR = <span style="color: #F1C40F">?</span></p>
   </div>
   <div class="footer-container">
     <input autocomplete="off" v-show="this.showAdvanced" type="text" id="begin-input" class="adv-search-box" style="margin-left: 15px;" v-model="beginsWith" placeholder="BÖRJAR MED"/>
@@ -122,7 +122,7 @@ html, body {
   font-size: 16px;
   width: 60%;
   font-weight: bold;
-  color: #fff;
+  color: #F1C40F;
   border-radius: 7.5px;
   height: 34px;
   border: none;
@@ -134,7 +134,8 @@ html, body {
   padding-left: 5px;
   padding-right: 5px;
   text-align: center;
-  text-transform:uppercase
+  text-transform:uppercase;
+  font-family: 'Roboto', sans-serif;
 }
 
 .title-container {
@@ -314,8 +315,8 @@ export default {
   methods:  {
     toggleAdvancedMode() {
       this.showAdvanced = !this.showAdvanced;
-      this.clearLists();
-      this.message = '';
+      // this.clearLists();
+      // this.message = '';
       this.added = 1;
     },
     toggleShowPoints() {

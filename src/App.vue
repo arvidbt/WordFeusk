@@ -1,19 +1,19 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
+<div class="wrapper">
+
   <div class="title-container">
     <h1 class="title-text">WordFeusk</h1>
-    <button @click="toggleAdvancedMode()" class="search-button">Advancerad Version</button>
+    <img @click="toggleAdvancedMode()" class="search-button" src="https://img.icons8.com/material-outlined/24/FFFFFF/advanced-search.png"/>
+    <p class="help-text" style="margin-left: 5px; color: #F1C40F;"> BETA</p>
+  <!-- <button @click="toggleAdvancedMode()" class="search-button">Advancerad Version</button> -->
     <!-- <p class="help-text">Skriv in dina bokstäver i sökrutan nedan och se vilka ord du kan skapa.</p> -->
   </div>
   <div class="footer-container">
-    <p class="help-text">Skriv in dina bokstäver i sökrutan och se vilka ord du kan skapa. <br>(? för blanka rutor).</p>
-    <input type="text" id="letter-input" class="search-box" v-model="message"/>
-  </div>
-
-  <div v-show="this.showAdvanced" class="footer-container">
-    <!-- <p class="help-text">Skriv in dina bokstäver i sökrutan nedan och se vilka ord du kan skapa.</p> -->
-    <input type="text" id="begin-input" class="search-box" v-model="beginsWith"/>
-    <input type="text" id="end-input" class="search-box" v-model="endWith"/>
+    <!-- <p class="help-text">Skriv in dina bokstäver i sökrutan och se vilka ord du kan skapa. <br>(? för blanka rutor).</p> -->
+    <input autocomplete="off" v-show="this.showAdvanced" type="text" id="begin-input" class="adv-search-box" style="margin-left: 15px;" v-model="beginsWith" placeholder="BÖRJAR MED"/>
+    <input autocomplete="off" type="text" id="letter-input" class="search-box" v-model="message" placeholder="DINA BOKSTÄVER.."/>
+    <input autocomplete="off" v-show="this.showAdvanced" type="text" id="end-input" class="adv-search-box" style="margin-right: 15px;"  v-model="endWith" placeholder="SLUTAR MED"/>
   </div>
   <div class="background-container" id="bck-grd">
     <!-- <button class="search-button" @click="this.toggleShowPoints()">Klicka för se poäng för orden.</button> -->
@@ -21,54 +21,55 @@
       <p class="list-titles" v-if="this.eight_or_more_letter_words.length > 0">Det finns {{ this.eight_or_more_letter_words.length }} ord med 8+ bokstäver.</p>
       <div v-if="this.eight_or_more_letter_words.length > 0" class="list-container">
         <h3 v-for="(word, index) in this.eight_or_more_letter_words" :key="index" class="word-text">
-          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: yellow; font-size: 12px;">{{ word[1] }}p</span></div>
+          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: #F1C40F; font-size: 12px;">{{ word[1] }}p</span></div>
         </h3>
       </div>
 
       <p class="list-titles" v-if="this.seven_letter_words.length > 0">Det finns {{ this.seven_letter_words.length }} ord med 7 bokstäver.</p>
       <div v-if="this.seven_letter_words.length > 0" class="list-container">
         <h3 v-for="(word, index) in this.seven_letter_words" :key="index" class="word-text">
-          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: yellow; font-size: 12px;">{{ word[1] }}p</span></div>
+          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: #F1C40F; font-size: 12px;">{{ word[1] }}p</span></div>
         </h3>
       </div>
 
       <p class="list-titles" v-if="this.six_letter_words.length > 0">Det finns {{ this.six_letter_words.length }} ord med 6 bokstäver.</p>
       <div v-if="this.six_letter_words.length > 0" class="list-container">
         <h3 v-for="(word, index) in this.six_letter_words" :key="index" class="word-text">
-          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: yellow; font-size: 12px;">{{ word[1] }}p</span></div>
+          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: #F1C40F; font-size: 12px;">{{ word[1] }}p</span></div>
         </h3>
       </div>
 
       <p class="list-titles" v-if="this.five_letter_words.length > 0">Det finns {{ this.five_letter_words.length }} ord med 5 bokstäver.</p>
       <div v-if="this.five_letter_words.length > 0" class="list-container">
         <h3 v-for="(word, index) in this.five_letter_words" :key="index" class="word-text">
-          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: yellow; font-size: 12px;">{{ word[1] }}p</span></div>
+          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: #F1C40F; font-size: 12px;">{{ word[1] }}p</span></div>
         </h3>
       </div>
 
       <p class="list-titles" v-if="this.four_letter_words.length > 0">Det finns {{ this.four_letter_words.length }} ord med 4 bokstäver.</p>
       <div v-if="this.four_letter_words.length > 0" class="list-container">
         <h3 v-for="(word, index) in this.four_letter_words" :key="index" class="word-text">
-          <div @click="linkTo(word)" class="word-container">{{ word[0] }} <span v-if="this.showPoints" style="color: yellow; font-size: 12px;">{{ word[1] }}p</span></div>
+          <div @click="linkTo(word)" class="word-container">{{ word[0] }} <span v-if="this.showPoints" style="color: #F1C40F; font-size: 12px;">{{ word[1] }}p</span></div>
         </h3>
       </div>
 
       <p class="list-titles" v-if="this.three_letter_words.length > 0">Det finns {{ this.three_letter_words.length }} ord med 3 bokstäver.</p>
       <div v-if="this.three_letter_words.length > 0" class="list-container">
         <h3 v-for="(word, index) in this.three_letter_words" :key="index" class="word-text">
-          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: yellow; font-size: 12px;">{{ word[1] }}p</span></div>
+          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: #F1C40F; font-size: 12px;">{{ word[1] }}p</span></div>
         </h3>
       </div>
 
       <p class="list-titles" v-if="this.two_letter_words.length > 0">Det finns {{ this.two_letter_words.length }} ord med 2 bokstäver.</p>
       <div v-if="this.two_letter_words.length > 0" class="list-container">
         <h3 v-for="(word, index) in this.two_letter_words" :key="index" class="word-text">
-          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: yellow; font-size: 12px;">{{ word[1] }}p</span></div>
+          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: #F1C40F; font-size: 12px;">{{ word[1] }}p</span></div>
         </h3>
       </div>
     </div>
   </div>
   <!-- <div class="footer-container"><p class="help-text">Made by Arvid Bergman Thörn</p></div> -->
+  </div>
 </template>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,900&display=swap');
@@ -76,15 +77,23 @@
 p, h1, h3 {
   font-family: 'Roboto', sans-serif;
 }
-body {
-  background-color: #B9DEFE;
 
+html, body {
+  background-color: #B9DEFE;
+  /* height: 100%; */
 }
 
 *:focus {
   outline: none;
 }
-
+::placeholder {
+  font-style: italic;
+  font-size: 10px;
+  color: #B9DEFE;
+  font-style: italic;
+  font-weight: bold;
+  font-family: 'Roboto', sans-serif;
+}
 .search-box {
   background-color: #199EF3;
   font-size: 18px;
@@ -98,17 +107,41 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-left: 5px;
+  padding-right: 5px;
   text-align: center;
+  text-transform:uppercase;
+  font-family: 'Roboto', sans-serif;
 }
+
+.adv-search-box {
+  background-color: #199EF3;
+  font-size: 16px;
+  width: 60%;
+  font-weight: bold;
+  color: #fff;
+  border-radius: 7.5px;
+  height: 34px;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-left: 5px;
+  padding-right: 5px;
+  text-align: center;
+  text-transform:uppercase
+}
+
 .title-container {
   width: 100%;
   background-color: #0082F0;
-  /* background-image: linear-gradient(to bottom right, #0082F0, #B9DEFE); */
   display: flex;
   align-items: center;
   border-radius: 7.5px;
-  /* padding: 20px; */
 }
 
 .footer-container {
@@ -125,9 +158,21 @@ body {
   margin-top: 10px;
   overflow-y: auto;
   background: #0082F0;
-  height: 75vh;
+  /* height: 67vh; */
+  flex-direction: column;
+  max-height: 95vh;
+  display: flex;
+  flex: 1;
   padding: 10px;
   border-radius: 7.5px;
+  margin-bottom: -15px;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  max-height: 95vh;
+  min-height: 95vh;
 }
 
 .title-text {
@@ -170,7 +215,7 @@ body {
   background-color: #199EF3;
   border-radius: 5px;
   border: none;
-  color: yellow;
+  color: #F1C40F;
   font-size: 14px;
   font-style: italic;
   font-weight: bold;
@@ -268,6 +313,8 @@ export default {
   methods:  {
     toggleAdvancedMode() {
       this.showAdvanced = !this.showAdvanced;
+      this.clearLists();
+      this.message = '';
       this.added = 1;
     },
     toggleShowPoints() {

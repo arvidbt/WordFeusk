@@ -2,11 +2,18 @@
 <template>
   <div class="title-container">
     <h1 class="title-text">WordFeusk</h1>
+    <!-- <button @click="toggleAdvancedMode()" class="search-button">Advancerad Version</button> -->
     <!-- <p class="help-text">Skriv in dina bokstäver i sökrutan nedan och se vilka ord du kan skapa.</p> -->
   </div>
   <div class="footer-container">
-    <p class="help-text">Skriv in dina bokstäver i sökrutan nedan och se vilka ord du kan skapa.</p>
+    <p class="help-text">Skriv in dina bokstäver i sökrutan och se vilka ord du kan skapa. <br>(? för blanka rutor).</p>
     <input type="text" id="letter-input" class="search-box" v-model="message"/>
+  </div>
+
+  <div v-show="this.showAdvanced" class="footer-container">
+    <!-- <p class="help-text">Skriv in dina bokstäver i sökrutan nedan och se vilka ord du kan skapa.</p> -->
+    <input type="text" id="begin-input" class="search-box" v-model="beginsWith"/>
+    <input type="text" id="end-input" class="search-box" v-model="endsWith"/>
   </div>
   <div class="background-container">
     <!-- <button class="search-button" @click="this.toggleShowPoints()">Klicka för se poäng för orden.</button> -->
@@ -92,7 +99,7 @@ body {
   justify-content: center;
   align-items: center;
   padding: 15px;
-  /* text-align: center; */
+  text-align: center;
 }
 .title-container {
   width: 100%;
@@ -163,9 +170,14 @@ body {
   background-color: #199EF3;
   border-radius: 5px;
   border: none;
-  color: #fff;
-  font-size: 16px;
+  color: yellow;
+  font-size: 14px;
+  font-style: italic;
   font-weight: bold;
+  margin-left: 15px;
+  font-family: 'Roboto', sans-serif;
+  position: absolute;
+  right: 25px;
 }
 
 
@@ -221,14 +233,22 @@ export default {
   name: 'App',
 
   mounted() {
-    this.loadWordlist();
+    this.loadSAOLDictionary();
     document.getElementById('letter-input').addEventListener('input', () => {
-      this.searchWords();
+      this.getWords();
+    })
+    document.getElementById('begin-input').addEventListener('input', () => {
+      this.getWords();
+    })
+    document.getElementById('end-input').addEventListener('input', () => {
+      this.getWords();
     })
   },
   data() {
     return {
       message: '',
+      beginsWith: '',
+      endsWith: '',
       maxWordLength: 0,
       filtered_words: null,
       accepted_words: null,
@@ -240,9 +260,13 @@ export default {
       two_letter_words: [],
       eight_or_more_letter_words: [],
       showPoints: true,
+      showAdvanced: false,
     }
   },
   methods:  {
+    toggleAdvancedMode() {
+      this.showAdvanced = !this.showAdvanced;
+    },
     toggleShowPoints() {
       this.showPoints = !this.showPoints;
     },
@@ -279,7 +303,7 @@ export default {
 
     illegalLetters(i, j) {
       const letter = this.filtered_words[i][j];
-      return !this.message.includes(letter)
+      return !this.message.includes(letter);
     },
 
     filter(array, type) {
@@ -300,10 +324,17 @@ export default {
       }
       return data;
     },
+    // eslint-disable-next-line no-unused-vars
+    advancedFilter() {
 
-    getWords() {
+    },
+
+    getWordsContainingLetters() {
       this.accepted_words = this.filter(this.filtered_words, 'letter');
       this.accepted_words = this.filter(this.accepted_words, 'duplicate');
+      if(this.showAdvanced) {
+        this.advancedFilter();
+      }
       this.calculateWordPoints();
       this.sortWords();
     },
@@ -339,15 +370,11 @@ export default {
     canCreateWord() {
       return this.accepted_words.length > 0
     },
-    async loadWordlist() {
+    async loadSAOLDictionary() {
       this.filtered_words = await require('../wordlist.json'); 
-      this.filtered_words = this.filtered_words.filter(word => word.length <= this.maxWordLength && word.length > 1);
-      this.filtered_words = this.filtered_words.map(word => {
-        return word.toUpperCase();
-      })
     },
     getMaxWordLength() {
-      return this.message.length;
+      return this.message.length + this.beginsWith.length + this.endsWith.length;
     },
     clearLists() {
       this.two_letter_words = []
@@ -358,15 +385,21 @@ export default {
       this.seven_letter_words = []
       this.eight_or_more_letter_words = []
     },
-    searchWords() {
+    getWords() {
       if(!this.message) {
         return;
       }
       this.clearLists();
       this.maxWordLength = this.getMaxWordLength();
       this.message = this.message.toUpperCase();
-      this.getWords();
-      this.filtered_words = this.loadWordlist();
+      this.beginsWith = this.beginsWith.toUpperCase();
+      this.endsWith = this.endsWith.toUpperCase();
+      this.filtered_words = this.filtered_words.filter(word => word.length <= this.maxWordLength && word.length > 1);
+      this.filtered_words = this.filtered_words.map(word => {
+        return word.toUpperCase();
+      })
+      this.getWordsContainingLetters();
+      this.filtered_words = this.loadSAOLDictionary();
 
     },
   },

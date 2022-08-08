@@ -330,6 +330,18 @@ export default {
           else if(seven_pointers.includes(word[j])) { points += 7}
           else if(eight_pointers.includes(word[j])) { points += 8}
         }
+        if(word.length > 6) {
+          let length = word.length;
+          if(this.showAdvanced) {
+            const begin = this.beginsWith.length > 0;
+            const end   = this.endWith.length > 0;
+            const both  = begin && end;
+            if(both) { length = length - this.endWith - this.beginsWith }
+            else if(begin) { length = length - this.beginsWith }
+            else if(end) { length = length - this.endWith } 
+          }
+          if(length > 6) { points += 40 }
+        }
         this.accepted_words[i] = word + " " + points.toString();
       }
     },

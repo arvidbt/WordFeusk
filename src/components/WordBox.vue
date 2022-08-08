@@ -1,5 +1,5 @@
 <template>
-  <p class="list-titles" v-if="this.showBox">Det finns <span style="color: #F1C40F; ">{{ this.list.length }}</span> ord med {{ this.title }} bokstäver.</p>
+  <p class="list-titles" v-if="this.showBox">Det finns <span style="color: #F1C40F;">{{ this.list.length }}</span> ord med {{ this.title }} bokstäver.</p>
   <div v-if="this.showBox" class="list-container">
     <h3 v-for="(word, index) in this.list" :key="index" class="word-text">
       <div @click="linkTo(word)" class="word-container">

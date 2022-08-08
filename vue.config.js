@@ -7,12 +7,6 @@ module.exports = {
   publicPath: process.env.NODE_ENV === "production" ? "/wordfeusk/" : "/",
 };
 
-module.exports = {
-  pwa: {
-    name: 'WordFeud'
-  }
-};
-
 
 // module.exports = {
 //   pwa: {

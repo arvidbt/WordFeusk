@@ -1,76 +1,61 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
-<div class="wrapper">
+  <div class="wrapper">
 
-  <div class="title-container">
-    <h1 class="title-text">WordFeusk</h1>
-    <img @click="toggleAdvancedMode()" class="search-button" src="https://img.icons8.com/material-outlined/24/FFFFFF/advanced-search.png"/>
-    <p class="help-text" style="margin-left: 5px; color: #F1C40F;"> BETA</p>
-  <!-- <button @click="toggleAdvancedMode()" class="search-button">Advancerad Version</button> -->
-  </div>
-  <div class="footer-container" style="margin-top: -10px;">
-    <p class="help-text" style="color: #B9DEFE; font-size: 12px;"><span style="color: #F1C40F">-</span> STRIKT ORDLISTA<br><span style="color: #F1C40F;">-</span> BLANKA BRICKOR = <span style="color: #F1C40F">?</span></p>
-  </div>
-  <div class="footer-container">
-    <input autocomplete="off" v-show="this.showAdvanced" type="text" id="begin-input" class="adv-search-box" style="margin-left: 15px;" v-model="beginsWith" placeholder="BÖRJAR MED"/>
-    <input autocomplete="off" type="text" id="letter-input" class="search-box" v-model="message" placeholder="DINA BOKSTÄVER.."/>
-    <input autocomplete="off" v-show="this.showAdvanced" type="text" id="end-input" class="adv-search-box" style="margin-right: 15px;"  v-model="endWith" placeholder="SLUTAR MED"/>
-  </div>
-  <div class="background-container" id="bck-grd">
-    <!-- <button class="search-button" @click="this.toggleShowPoints()">Klicka för se poäng för orden.</button> -->
-    <div style="margin-top: 15px;">
-      <p class="list-titles" v-if="this.eight_or_more_letter_words.length > 0">Det finns {{ this.eight_or_more_letter_words.length }} ord med 8+ bokstäver.</p>
-      <div v-if="this.eight_or_more_letter_words.length > 0" class="list-container">
-        <h3 v-for="(word, index) in this.eight_or_more_letter_words" :key="index" class="word-text">
-          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: #F1C40F; font-size: 12px;">{{ word[1] }}p</span></div>
-        </h3>
-      </div>
+    <div class="title-container">
+      <h1 class="title-text">WordFeusk</h1>
+      <img @click="toggleAdvancedMode()" class="search-button" src="https://img.icons8.com/material-outlined/24/FFFFFF/advanced-search.png"/>
+      <p class="help-text" style="margin-left: 5px; color: #F1C40F;"> BETA</p>
+    <!-- <button @click="toggleAdvancedMode()" class="search-button">Advancerad Version</button> -->
+    </div>
+    <div class="footer-container" style="margin-top: -10px;">
+      <p class="help-text" style="color: #B9DEFE; font-size: 12px;"><span style="color: #F1C40F">-</span> STRIKT ORDLISTA<br><span style="color: #F1C40F;">-</span> BLANKA BRICKOR = <span style="color: #F1C40F">?</span></p>
+    </div>
+    <div class="footer-container">
+      <input autocomplete="off" v-show="this.showAdvanced" type="text" id="begin-input" class="adv-search-box" style="margin-left: 15px;" v-model="beginsWith" placeholder="BÖRJAR MED"/>
+      <input autocomplete="off" type="text" id="letter-input" class="search-box" v-model="message" placeholder="DINA BOKSTÄVER.."/>
+      <input autocomplete="off" v-show="this.showAdvanced" type="text" id="end-input" class="adv-search-box" style="margin-right: 15px;"  v-model="endWith" placeholder="SLUTAR MED"/>
+    </div>
+    <div class="background-container" id="bck-grd">
+      <!-- <div style="margin-top: 15px;"> -->
+        <word-box v-bind:title="'8+'"
+                  v-bind:showBox='this.eight_or_more_letter_words.length > 0'
+                  v-bind:list='this.eight_or_more_letter_words'
+        />
 
-      <p class="list-titles" v-if="this.seven_letter_words.length > 0">Det finns {{ this.seven_letter_words.length }} ord med 7 bokstäver.</p>
-      <div v-if="this.seven_letter_words.length > 0" class="list-container">
-        <h3 v-for="(word, index) in this.seven_letter_words" :key="index" class="word-text">
-          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: #F1C40F; font-size: 12px;">{{ word[1] }}p</span></div>
-        </h3>
-      </div>
+        <word-box v-bind:title="7"
+                  v-bind:showBox='this.seven_letter_words.length > 0'
+                  v-bind:list='this.seven_letter_words'
+        />
 
-      <p class="list-titles" v-if="this.six_letter_words.length > 0">Det finns {{ this.six_letter_words.length }} ord med 6 bokstäver.</p>
-      <div v-if="this.six_letter_words.length > 0" class="list-container">
-        <h3 v-for="(word, index) in this.six_letter_words" :key="index" class="word-text">
-          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: #F1C40F; font-size: 12px;">{{ word[1] }}p</span></div>
-        </h3>
-      </div>
+        <word-box v-bind:title="6"
+                  v-bind:showBox='this.six_letter_words.length > 0'
+                  v-bind:list='this.six_letter_words'
+        />
 
-      <p class="list-titles" v-if="this.five_letter_words.length > 0">Det finns {{ this.five_letter_words.length }} ord med 5 bokstäver.</p>
-      <div v-if="this.five_letter_words.length > 0" class="list-container">
-        <h3 v-for="(word, index) in this.five_letter_words" :key="index" class="word-text">
-          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: #F1C40F; font-size: 12px;">{{ word[1] }}p</span></div>
-        </h3>
-      </div>
+        <word-box v-bind:title="5"
+                  v-bind:showBox='this.five_letter_words.length > 0'
+                  v-bind:list='this.five_letter_words'
+        />
 
-      <p class="list-titles" v-if="this.four_letter_words.length > 0">Det finns {{ this.four_letter_words.length }} ord med 4 bokstäver.</p>
-      <div v-if="this.four_letter_words.length > 0" class="list-container">
-        <h3 v-for="(word, index) in this.four_letter_words" :key="index" class="word-text">
-          <div @click="linkTo(word)" class="word-container">{{ word[0] }} <span v-if="this.showPoints" style="color: #F1C40F; font-size: 12px;">{{ word[1] }}p</span></div>
-        </h3>
-      </div>
 
-      <p class="list-titles" v-if="this.three_letter_words.length > 0">Det finns {{ this.three_letter_words.length }} ord med 3 bokstäver.</p>
-      <div v-if="this.three_letter_words.length > 0" class="list-container">
-        <h3 v-for="(word, index) in this.three_letter_words" :key="index" class="word-text">
-          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: #F1C40F; font-size: 12px;">{{ word[1] }}p</span></div>
-        </h3>
-      </div>
+        <word-box v-bind:title="4"
+                  v-bind:showBox='this.four_letter_words.length > 0'
+                  v-bind:list='this.four_letter_words'
+        />
 
-      <p class="list-titles" v-if="this.two_letter_words.length > 0">Det finns {{ this.two_letter_words.length }} ord med 2 bokstäver.</p>
-      <div v-if="this.two_letter_words.length > 0" class="list-container">
-        <h3 v-for="(word, index) in this.two_letter_words" :key="index" class="word-text">
-          <div @click="linkTo(word)" class="word-container">{{ word[0] }}  <span v-if="this.showPoints" style="color: #F1C40F; font-size: 12px;">{{ word[1] }}p</span></div>
-        </h3>
+        <word-box v-bind:title="3"
+                  v-bind:showBox='this.three_letter_words.length > 0'
+                  v-bind:list='this.three_letter_words'
+        />
+
+        <word-box v-bind:title="2"
+                  v-bind:showBox='this.two_letter_words.length > 0'
+                  v-bind:list='this.two_letter_words'
+        />
       </div>
     </div>
-  </div>
-  <!-- <div class="footer-container"><p class="help-text">Made by Arvid Bergman Thörn</p></div> -->
-  </div>
+  <!-- </div> -->
 </template>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,900&display=swap');
@@ -81,7 +66,6 @@ p, h1, h3 {
 
 html, body {
   background-color: #B9DEFE;
-  /* height: 100%; */
 }
 
 *:focus {
@@ -235,7 +219,7 @@ html, body {
   /* display: ; */
   display: flex;
   flex-wrap: wrap;
-  overflow: auto;
+  /* overflow: auto; */
   margin-bottom: 10px;
   border-radius: 5px;
   padding: 10px;
@@ -276,8 +260,15 @@ html, body {
 
 
 <script>
+import WordBox from "@/components/WordBox.vue";
+
+
+
 export default {
   name: 'App',
+  components: {
+    WordBox,
+  },
 
   mounted() {
     this.loadSAOLDictionary();
@@ -297,7 +288,7 @@ export default {
       letters: '',
       beginsWith: '',
       endWith: '',
-      maxWordLength: 0,
+      MAX_WORD_LENGTH: 0,
       filtered_words: null,
       accepted_words: null,
       seven_letter_words: [],
@@ -310,21 +301,16 @@ export default {
       showPoints: true,
       showAdvanced: false,
       added: 0,
+      loaded: false,
     }
   },
   methods:  {
     toggleAdvancedMode() {
       this.showAdvanced = !this.showAdvanced;
-      // this.clearLists();
-      // this.message = '';
       this.added = 1;
     },
     toggleShowPoints() {
       this.showPoints = !this.showPoints;
-    },
-    linkTo(word) {
-      const link = "https://synonymer.se/sv-syn/" + word[0];
-      window.open(link, '_blank').focus();
     },
     calculateWordPoints() {
       const one_pointers    = ['A', 'D', 'E', 'I', 'N', 'R', 'S', 'T'];
@@ -468,11 +454,11 @@ export default {
         return;
       }
       this.clearLists();
-      this.maxWordLength = this.getMaxWordLength();
+      this.MAX_WORD_LENGTH = this.getMaxWordLength();
       this.letters = this.message.toUpperCase();
       this.beginsWith = this.beginsWith.toUpperCase();
       this.endWith = this.endWith.toUpperCase();
-      this.filtered_words = this.filtered_words.filter(word => word.length <= this.maxWordLength && word.length > 1);
+      this.filtered_words = this.filtered_words.filter(word => word.length <= this.MAX_WORD_LENGTH && word.length > 1);
       this.filtered_words = this.filtered_words.map(word => {
         return word.toUpperCase();
       })

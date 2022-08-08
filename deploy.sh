@@ -7,5 +7,6 @@ set -e
 
 npm run build
 git add .
+git status
 git commit -m "automatic script deployment"
 git subtree push --prefix dist origin gh-pages

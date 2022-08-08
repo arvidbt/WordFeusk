@@ -12,9 +12,9 @@ module.exports = {
     name: 'App Name',
     workboxOptions: {
       // swSrc is required in InjectManifest mode.
-      swSrc: 'service-worker.js',
+      // swSrc: 'service-worker.js',
       // ...other Workbox options...
-      exclude: [/_redirects/],
+      exclude: [/\.map$/, /_redirects/],
   }
   }
 };

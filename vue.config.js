@@ -9,13 +9,7 @@ module.exports = {
 
 module.exports = {
   pwa: {
-    name: 'App Name',
-    workboxOptions: {
-      // swSrc is required in InjectManifest mode.
-      // swSrc: 'service-worker.js',
-      // ...other Workbox options...
-      exclude: [/\.map$/, /_redirects/],
-  }
+    name: 'WordFeud'
   }
 };
 

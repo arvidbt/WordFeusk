@@ -4,12 +4,19 @@
 
     <div class="title-container">
       <h1 class="title-text">WordFeusk</h1>
-      <img @click="toggleAdvancedMode()" class="search-button" src="https://img.icons8.com/material-outlined/24/FFFFFF/advanced-search.png"/>
       <p class="help-text" style="margin-left: 5px; color: #F1C40F;"> BETA</p>
-    <!-- <button @click="toggleAdvancedMode()" class="search-button">Advancerad Version</button> -->
+      <svg @click="toggleAdvancedMode()" class="search-button" width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="#fff" stroke-width="2" d="M15,16 L21,22 L15,16 Z M10,18 C13.8659932,18 17,14.8659932 17,11 C17,7.13400675 13.8659932,4 10,4 C6.13400675,4 3,7.13400675 3,11 C3,14.8659932 6.13400675,18 10,18 Z M20,1 L20,7 M17,4 L23,4"/></svg>
+      <svg @click="toggleHelp()" class="search-button" style="margin-right: 60px;" width="24px" height="24px" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg" aria-labelledby="helpIconTitle" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" color="#000000"> <title id="helpIconTitle">Help</title> <path d="M12 14C12 12 13.576002 11.6652983 14.1186858 11.1239516 14.663127 10.5808518 15 9.82976635 15 9 15 7.34314575 13.6568542 6 12 6 11.1040834 6 10.2998929 6.39272604 9.75018919 7.01541737 9.49601109 7.30334431 9.29624369 7.64043912 9.16697781 8.01061095"/> <line x1="12" y1="17" x2="12" y2="17"/> <circle cx="12" cy="12" r="10"/> </svg>
     </div>
-    <div class="footer-container" style="margin-top: -10px;">
-      <p class="help-text" style="color: #B9DEFE; font-size: 12px;"><span style="color: #F1C40F">-</span> STRIKT ORDLISTA<br><span style="color: #F1C40F;">-</span> BLANKA BRICKOR = <span style="color: #F1C40F">?</span></p>
+    <div v-if="this.showHelp" class="footer-container" style="margin-top: -10px;">
+      <p class="help-text" style="font-size: 12px;">
+        <span style="color: #F1C40F">-</span> STRIKT ORDLISTA<br>
+        <span style="font-size: 10px;color: #B9DEFE; ">&nbsp;&nbsp;BÖJDA ORD KOMMER INTE MED I RESULTATET.<br>
+        &nbsp;&nbsp;BOKSTÄVERNA <span style="color: #F1C40F">UFASKT</span> GER <span style="color: #F1C40F">FUSKA</span>, MEN INTE <span style="color: #F1C40F">FUSKAT</span>.<br><br></span>
+        <span style="color: #F1C40F;">-</span> BLANKA BRICKOR<span style="color: #F1C40F"></span><br>
+        <span style="font-size: 10px;color: #B9DEFE; ">&nbsp;&nbsp;FÖR ATT ANVÄNDA BLANKA RUTOR SKRIV IN <span style="color: #F1C40F">?</span> I SÖKRUTAN.</span>
+
+        </p><br>
     </div>
     <div class="footer-container">
       <input autocomplete="off" v-show="this.showAdvanced" type="text" id="begin-input" class="adv-search-box" style="margin-left: 15px;" v-model="beginsWith" placeholder="BÖRJAR MED"/>
@@ -138,6 +145,7 @@ html, body {
   border-radius: 7.5px;
   margin-top: 10px;
   /* position: fixed; */
+  transition: 0.3s ease-in-out;
 }
 
 .background-container {
@@ -201,7 +209,8 @@ html, body {
   background-color: #199EF3;
   border-radius: 5px;
   border: none;
-  color: #F1C40F;
+  color: #fff;
+  /* color: #F1C40F; */
   font-size: 14px;
   font-style: italic;
   font-weight: bold;
@@ -300,6 +309,7 @@ export default {
       eight_or_more_letter_words: [],
       showPoints: true,
       showAdvanced: false,
+      showHelp: false,
       added: 0,
       loaded: false,
     }
@@ -308,6 +318,9 @@ export default {
     toggleAdvancedMode() {
       this.showAdvanced = !this.showAdvanced;
       this.added = 1;
+    },
+    toggleHelp() {
+      this.showHelp = !this.showHelp;
     },
     toggleShowPoints() {
       this.showPoints = !this.showPoints;

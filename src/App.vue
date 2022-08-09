@@ -7,12 +7,14 @@
       <svg class="search-button" @click="toggleAdvancedMode()" width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="#fff" stroke-width="2" d="M15,16 L21,22 L15,16 Z M10,18 C13.8659932,18 17,14.8659932 17,11 C17,7.13400675 13.8659932,4 10,4 C6.13400675,4 3,7.13400675 3,11 C3,14.8659932 6.13400675,18 10,18 Z M20,1 L20,7 M17,4 L23,4"/></svg>
       <svg class="search-button" @click="toggleHelp()" style="margin-right: 64px;" width="24px" height="24px" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg" aria-labelledby="helpIconTitle" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" color="#000000"> <title id="helpIconTitle">Help</title> <path d="M12 14C12 12 13.576002 11.6652983 14.1186858 11.1239516 14.663127 10.5808518 15 9.82976635 15 9 15 7.34314575 13.6568542 6 12 6 11.1040834 6 10.2998929 6.39272604 9.75018919 7.01541737 9.49601109 7.30334431 9.29624369 7.64043912 9.16697781 8.01061095"/> <line x1="12" y1="17" x2="12" y2="17"/> <circle cx="12" cy="12" r="10"/> </svg>
     </div>
-    <div v-if="this.showHelp" class="footer-container" style="margin-top: -10px;">
+    <div class="info-container" :class="[!this.showHelp ? 'info-hidden' : 'info-shown']" :style="[{'height' : !this.showHelp ? '0px' : '250px'}]">
+      <!-- style="margin-top: -10px;" -->
+      <!-- :style="[{'height' : !this.showHelp ? '0px' : '200px'}]" -->
       <info-display/>
     </div>
     <div class="footer-container">
       <input autocomplete="off" v-show="this.showAdvancedSearch" type="text" id="begin-input" class="adv-search-box" style="margin-left: 15px;" v-model="advancedStartLetters" placeholder="BÖRJAR MED"/>
-      <input autocomplete="off" type="text" id="letter-input" class="search-box" v-model="inputLetters" placeholder="DINA BOKSTÄVER.."/>
+      <input maxlength="7" autocomplete="off" type="text" id="letter-input" class="search-box" v-model="inputLetters" placeholder="DINA BOKSTÄVER.."/>
       <input autocomplete="off" v-show="this.showAdvancedSearch" type="text" id="end-input" class="adv-search-box" style="margin-right: 15px;"  v-model="advancedEndingLetters" placeholder="SLUTAR MED"/>
     </div>
     <div class="background-container" id="bck-grd">
@@ -49,8 +51,8 @@
                   v-bind:showBox='this.acceptedTwoLetterWords.length > 0'
                   v-bind:list='this.acceptedTwoLetterWords'
         />
-      </div>
     </div>
+  </div>
 </template>
 
 <style src="./assets/styles.css"></style>
@@ -113,7 +115,13 @@ export default {
     },
 
     toggleHelp() {
+      this.clearLists();
       this.showHelp = !this.showHelp;
+      if(!this.showHelp && this.inputLetters.length > 0) {
+        setTimeout(() => {
+          this.getWords();
+        }, 300)
+      }
     },
 
     calculatePointsFor(word) {
@@ -303,6 +311,7 @@ export default {
       if(!this.inputLetters) {
         return;
       }
+      this.showHelp              = false;
       this.letters               = this.inputLetters.toUpperCase();
       this.advancedStartLetters  = this.advancedStartLetters.toUpperCase();
       this.advancedEndingLetters = this.advancedEndingLetters.toUpperCase();

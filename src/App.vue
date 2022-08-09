@@ -15,7 +15,6 @@
         &nbsp;&nbsp;BOKSTÄVERNA <span style="color: #F1C40F">UFASKT</span> GER <span style="color: #F1C40F">FUSKA</span>, MEN INTE <span style="color: #F1C40F">FUSKAT</span>.<br><br></span>
         <span style="color: #F1C40F;">-</span> BLANKA BRICKOR<span style="color: #F1C40F"></span><br>
         <span style="font-size: 10px;color: #B9DEFE; ">&nbsp;&nbsp;FÖR ATT ANVÄNDA BLANKA RUTOR SKRIV IN <span style="color: #F1C40F">?</span> I SÖKRUTAN.</span>
-
         </p><br>
     </div>
     <div class="footer-container">

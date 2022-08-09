@@ -15,20 +15,20 @@ module.exports = {
 }
 
 
-// module.exports = {
-//   pwa: {
-//     name: 'BDFI',
-//     themeColor: '#2d3748',
-//     msTileColor: '#2d3748',
-//     appleMobileWebAppCapable: 'no',
-//     appleMobileWebAppStatusBarStyle: 'default',
-//     // manifestPath: 'manifest.json',
-//     workboxPluginMode: 'InjectManifest',
-//     workboxOptions: {
-//         // swSrc is required in InjectManifest mode.
-//         swSrc: 'service-worker.js',
-//         // ...other Workbox options...
-//         exclude: [/_redirects/],
-//     }
-// }
-// };
+module.exports = {
+  pwa: {
+    name: 'WordFeusk',
+    themeColor: '#2d3748',
+    msTileColor: '#2d3748',
+    appleMobileWebAppCapable: 'no',
+    appleMobileWebAppStatusBarStyle: 'default',
+    manifestPath: 'dist/manifest.json',
+    // workboxPluginMode: 'InjectManifest',
+    workboxOptions: {
+        // swSrc is required in InjectManifest mode.
+        // swSrc: 'dist/service-worker.js',
+        // ...other Workbox options...
+        exclude: [/_redirects/],
+    }
+}
+};

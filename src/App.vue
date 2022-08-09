@@ -268,8 +268,6 @@ html, body {
 <script>
 import WordBox from "@/components/WordBox.vue";
 
-
-
 export default {
   name: 'App',
   components: {
@@ -401,8 +399,9 @@ export default {
       const begin = this.beginsWith.length > 0;
       const end   = this.endWith.length > 0;
       const both  = begin && end;
+      this.message = this.message.toUpperCase();
+      this.letters = this.letters.toUpperCase();
       const add = this.letters === this.message;
-
       if(both && add) {
         this.letters = this.beginsWith.concat(this.message.concat(this.endWith));
       } else if(begin && add) {

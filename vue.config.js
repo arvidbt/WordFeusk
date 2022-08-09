@@ -7,6 +7,13 @@ module.exports = {
   publicPath: process.env.NODE_ENV === "production" ? "/wordfeusk/" : "/",
 };
 
+module.exports = {
+  // ...other vue-cli plugin options...
+  pwa: {
+    name: 'WordFeusk', // <---- this is PWA name
+  }
+}
+
 
 // module.exports = {
 //   pwa: {

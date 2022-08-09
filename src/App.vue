@@ -11,57 +11,60 @@
       <info-display/>
     </div>
     <div class="footer-container">
-      <input autocomplete="off" v-show="this.showAdvanced" type="text" id="begin-input" class="adv-search-box" style="margin-left: 15px;" v-model="beginsWith" placeholder="BÖRJAR MED"/>
-      <input autocomplete="off" type="text" id="letter-input" class="search-box" v-model="message" placeholder="DINA BOKSTÄVER.."/>
-      <input autocomplete="off" v-show="this.showAdvanced" type="text" id="end-input" class="adv-search-box" style="margin-right: 15px;"  v-model="endWith" placeholder="SLUTAR MED"/>
+      <input autocomplete="off" v-show="this.showAdvancedSearch" type="text" id="begin-input" class="adv-search-box" style="margin-left: 15px;" v-model="advancedStartLetters" placeholder="BÖRJAR MED"/>
+      <input autocomplete="off" type="text" id="letter-input" class="search-box" v-model="inputLetters" placeholder="DINA BOKSTÄVER.."/>
+      <input autocomplete="off" v-show="this.showAdvancedSearch" type="text" id="end-input" class="adv-search-box" style="margin-right: 15px;"  v-model="advancedEndingLetters" placeholder="SLUTAR MED"/>
     </div>
     <div class="background-container" id="bck-grd">
         <word-box v-bind:title="'8+'"
-                  v-bind:showBox='this.eight_or_more_letter_words.length > 0'
-                  v-bind:list='this.eight_or_more_letter_words'
+                  v-bind:showBox='this.acceptedSevenPlusLettersWords.length > 0'
+                  v-bind:list='this.acceptedSevenPlusLettersWords'
         />
 
         <word-box v-bind:title="7"
-                  v-bind:showBox='this.seven_letter_words.length > 0'
-                  v-bind:list='this.seven_letter_words'
+                  v-bind:showBox='this.acceptedSevenLetterWords.length > 0'
+                  v-bind:list='this.acceptedSevenLetterWords'
         />
 
         <word-box v-bind:title="6"
-                  v-bind:showBox='this.six_letter_words.length > 0'
-                  v-bind:list='this.six_letter_words'
-        />
+                  v-bind:showBox='this.acceptedSixLetterWords.length > 0'
+                  v-bind:list='this.acceptedSixLetterWords'   />
 
         <word-box v-bind:title="5"
-                  v-bind:showBox='this.five_letter_words.length > 0'
-                  v-bind:list='this.five_letter_words'
+                  v-bind:showBox='this.acceptedFiveLetterWords.length > 0'
+                  v-bind:list='this.acceptedFiveLetterWords'
         />
 
-
         <word-box v-bind:title="4"
-                  v-bind:showBox='this.four_letter_words.length > 0'
-                  v-bind:list='this.four_letter_words'
+                  v-bind:showBox='this.acceptedFourLetterWords.length > 0'
+                  v-bind:list='this.acceptedFourLetterWords'
         />
 
         <word-box v-bind:title="3"
-                  v-bind:showBox='this.three_letter_words.length > 0'
-                  v-bind:list='this.three_letter_words'
+                  v-bind:showBox='this.acceptedThreeLetterWords.length > 0'
+                  v-bind:list='this.acceptedThreeLetterWords'
         />
 
         <word-box v-bind:title="2"
-                  v-bind:showBox='this.two_letter_words.length > 0'
-                  v-bind:list='this.two_letter_words'
+                  v-bind:showBox='this.acceptedTwoLetterWords.length > 0'
+                  v-bind:list='this.acceptedTwoLetterWords'
         />
       </div>
     </div>
 </template>
-<style src="./assets/styles.css">
 
-</style>
-
+<style src="./assets/styles.css"></style>
 
 <script>
 import WordBox from "@/components/WordBox.vue";
 import InfoDisplay from "@/components/InfoDisplay.vue"
+
+const ONE_POINT     = ['A', 'D', 'E', 'I', 'N', 'R', 'S', 'T'];
+const TWO_POINTS    = ['G', 'L', 'O'];
+const THREE_POINTS  = ['B', 'F', 'H', 'K', 'M', 'V'];
+const FOUR_POINTS   = ['P', 'U', 'Å', 'Ä', 'Ö'];
+const SEVEN_POINTS  = ['J', 'Y'];
+const EIGHT_POINTS  = ['C','X', 'Z']
 
 export default {
   name: 'App',
@@ -71,99 +74,99 @@ export default {
   },
 
   mounted() {
-    this.loadSAOLDictionary();
-    document.getElementById('letter-input').addEventListener('input', () => {
-      this.getWords();
-    })
-    document.getElementById('begin-input').addEventListener('input', () => {
-      this.getWords();
-    })
-    document.getElementById('end-input').addEventListener('input', () => {
-      this.getWords();
-    })
+    this.loadWordlist();
+    this.registerEventListener('letter-input');
+    this.registerEventListener('begin-input');
+    this.registerEventListener('end-input');
   },
   data() {
     return {
-      message: '',
-      letters: '',
-      beginsWith: '',
-      endWith: '',
-      MAX_WORD_LENGTH: 0,
-      filtered_words: null,
-      accepted_words: null,
-      seven_letter_words: [],
-      six_letter_words: [],
-      five_letter_words: [],
-      four_letter_words: [],
-      three_letter_words: [],
-      two_letter_words: [],
-      eight_or_more_letter_words: [],
-      showPoints: true,
-      showAdvanced: false,
-      showHelp: false,
-      added: 0,
-      loaded: false,
+      inputLetters:                  '',
+      letters:                       '',
+      advancedStartLetters:          '',
+      advancedEndingLetters:         '',
+      filteredWords:                 null,
+      acceptedWords:                 null,
+      acceptedSevenLetterWords:      [],
+      acceptedSixLetterWords:        [],
+      acceptedFiveLetterWords:       [],
+      acceptedFourLetterWords:       [],
+      acceptedThreeLetterWords:      [],
+      acceptedTwoLetterWords:        [],
+      acceptedSevenPlusLettersWords: [],
+      showAdvancedSearch:            false,
+      showHelp:                      false,
+      advancedStart:                 false,
+      advancedEnd:                   false,
+      advancedStartAndEnd:           false,
     }
   },
   methods:  {
-    redirectGithub() {
-      window.open('https://github.com/arvidbt/wordfeusk', '_blank').focus();
+    registerEventListener(id) {
+      document.getElementById(id).addEventListener('input', () => {
+        this.getWords();
+      })
     },
 
-    redirectLinkedIn() {
-      window.open('https://www.linkedin.com/in/arvid-bergman-th%C3%B6rn-1843701b8/', '_blank').focus();
-    },
     toggleAdvancedMode() {
-      this.showAdvanced = !this.showAdvanced;
-      this.added = 1;
+      this.showAdvancedSearch = !this.showAdvancedSearch;
     },
+
     toggleHelp() {
       this.showHelp = !this.showHelp;
     },
-    toggleShowPoints() {
-      this.showPoints = !this.showPoints;
+
+    calculatePointsFor(word) {
+      let points = 0;
+      for(const j in word) {
+        if(ONE_POINT.includes(word[j]))           { 
+          points += 1;
+        } else if(TWO_POINTS.includes(word[j]))   { 
+          points += 2;
+        } else if(THREE_POINTS.includes(word[j])) { 
+          points += 3;
+        } else if(FOUR_POINTS.includes(word[j]))  { 
+          points += 4;
+        } else if(SEVEN_POINTS.includes(word[j])) { 
+          points += 7;
+        } else if(EIGHT_POINTS.includes(word[j])) { 
+          points += 8;
+        }
+      }
+      if(word.length > 6) {
+        let length = word.length;
+        if(this.showAdvancedSearch) {
+          if(this.advancedStartAndEnd)  { 
+            length = length - this.advancedEndingLetters - this.advancedStartLetters;
+          } else if(this.advancedStart) { 
+            length = length - this.advancedStartLetters;
+          } else if(this.advancedEnd)   { 
+            length = length - this.advancedEndingLetters; 
+          } 
+        }
+        if(length > 6) { 
+          points += 40;
+        }
+      }
+      return points;
     },
+
     calculateWordPoints() {
-      const one_pointers    = ['A', 'D', 'E', 'I', 'N', 'R', 'S', 'T'];
-      const two_pointers    = ['G', 'L', 'O'];
-      const three_pointers  = ['B', 'F', 'H', 'K', 'M', 'V'];
-      const four_pointers   = ['P', 'U', 'Å', 'Ä', 'Ö'];
-      const seven_pointers  = ['J', 'Y'];
-      const eight_pointers  = ['C','X', 'Z']
-      for(const i in this.accepted_words) {
-        let word = this.accepted_words[i]
-        let points = 0
-        for(const j in word) {
-          if(one_pointers.includes(word[j]))        { points += 1}
-          else if(two_pointers.includes(word[j]))   { points += 2}
-          else if(three_pointers.includes(word[j])) { points += 3}
-          else if(four_pointers.includes(word[j]))  { points += 4}
-          else if(seven_pointers.includes(word[j])) { points += 7}
-          else if(eight_pointers.includes(word[j])) { points += 8}
-        }
-        if(word.length > 6) {
-          let length = word.length;
-          if(this.showAdvanced) {
-            const begin = this.beginsWith.length > 0;
-            const end   = this.endWith.length > 0;
-            const both  = begin && end;
-            if(both) { length = length - this.endWith - this.beginsWith }
-            else if(begin) { length = length - this.beginsWith }
-            else if(end) { length = length - this.endWith } 
-          }
-          if(length > 6) { points += 40 }
-        }
-        this.accepted_words[i] = word + " " + points.toString();
+      for(const i in this.acceptedWords) {
+        let word   = this.acceptedWords[i];
+        let points = this.calculatePointsFor(word);
+        this.acceptedWords[i] = word + " " + points.toString();
       }
     },
+
     illegalDuplicates(i, j) {
-      const word   = this.accepted_words[i];
-      const letter = this.accepted_words[i][j]
+      const word   = this.acceptedWords[i];
+      const letter = this.acceptedWords[i][j]
       return (this.letters.split(letter).length - 1) < (word.split(letter).length - 1)
     },
 
     illegalLetters(i, j) {
-      const letter = this.filtered_words[i][j];
+      const letter = this.filteredWords[i][j];
       return !this.letters.includes(letter);
     },
 
@@ -185,109 +188,128 @@ export default {
       }
       return data;
     },
+
+    determineAdvancedFilter() {
+      this.advancedStart       = this.advancedStartLetters.length > 0;
+      this.advancedEnd         = this.advancedEndingLetters.length > 0;
+      this.advancedStartAndEnd = this.advancedStart && this.advancedEnd;
+    },
+
     filterAdvanced() {
-      const begin = this.beginsWith.length > 0;
-      const end   = this.endWith.length > 0;
-      const both  = begin && end;
-      if(both) {
-        this.accepted_words = this.accepted_words.filter(word => word.startsWith(this.beginsWith) && word.endsWith(this.endWith));
-      } else if(begin) {
-        this.accepted_words = this.accepted_words.filter(word => word.startsWith(this.beginsWith))
-      } else if(end) {
-        this.accepted_words = this.accepted_words.filter(word => word.endsWith(this.endWith))
+      if(this.advancedStartAndEnd) {
+        this.acceptedWords = this.acceptedWords.filter(word => 
+          word.startsWith(this.advancedStartLetters) && 
+          word.endsWith(this.advancedEndingLetters)
+        );
+      } else if(this.advancedStart) {
+        this.acceptedWords = this.acceptedWords.filter(word => 
+          word.startsWith(this.advancedStartLetters)
+        );
+      } else if(this.advancedEnd) {
+        this.acceptedWords = this.acceptedWords.filter(word => 
+          word.endsWith(this.advancedEndingLetters)
+        );
       }
     },
 
     applyAdvancedFilter() {
-      const begin = this.beginsWith.length > 0;
-      const end   = this.endWith.length > 0;
-      const both  = begin && end;
-      this.message = this.message.toUpperCase();
-      this.letters = this.letters.toUpperCase();
-      const add = this.letters === this.message;
-      if(both && add) {
-        this.letters = this.beginsWith.concat(this.message.concat(this.endWith));
-      } else if(begin && add) {
-        this.letters = this.beginsWith.concat(this.message);
-      } else if(end && add) {
-        this.letters = this.message.concat(this.endWith);
+      this.inputLetters = this.inputLetters.toUpperCase();
+      this.letters      = this.letters.toUpperCase();
+      const add         = this.letters === this.inputLetters;
+      if(this.advancedStartAndEnd && add) {
+        this.letters = this.advancedStartLetters
+        .concat(this.inputLetters
+        .concat(this.advancedEndingLetters));
+      } else if(this.advancedStart && add) {
+        this.letters = this.advancedStartLetters
+        .concat(this.inputLetters);
+      } else if(this.advancedEnd && add) {
+        this.letters = this.inputLetters
+        .concat(this.advancedEndingLetters);
       }
     },
 
     getWordsContainingLetters() {
-      if(this.showAdvanced) {
-        this.applyAdvancedFilter();
+      if(this.showAdvancedSearch) {
+        this.determineAdvancedFilter(); 
+        this.applyAdvancedFilter(); 
       }
-      this.accepted_words = this.filter(this.filtered_words, 'letter');
-      this.accepted_words = this.filter(this.accepted_words, 'duplicate');
-      if(this.showAdvanced) {
-        this.filterAdvanced(this.accepted_words);
+      this.acceptedWords = this.filter(this.filteredWords, 'letter');
+      this.acceptedWords = this.filter(this.acceptedWords, 'duplicate');
+      if(this.showAdvancedSearch) { 
+        this.filterAdvanced(this.acceptedWords); 
       }
       this.calculateWordPoints();
       this.sortWords();
     },
 
     sortWords() {
-      for(const i in this.accepted_words) {
-        let word = this.accepted_words[i].split(' ')
+      for(const i in this.acceptedWords) {
+        let word = this.acceptedWords[i].split(' ')
         switch (word[0].length) {
           case 2:
-            this.two_letter_words.push(word)
+            this.acceptedTwoLetterWords.push(word)
             break;
           case 3:
-            this.three_letter_words.push(word)
+            this.acceptedThreeLetterWords.push(word)
             break;
           case 4:
-            this.four_letter_words.push(word)
+            this.acceptedFourLetterWords.push(word)
             break;
           case 5:
-            this.five_letter_words.push(word)
+            this.acceptedFiveLetterWords.push(word)
             break;
           case 6:
-            this.six_letter_words.push(word)
+            this.acceptedSixLetterWords.push(word)
             break;
           case 7:
-            this.seven_letter_words.push(word)
+            this.acceptedSevenLetterWords.push(word)
             break;
           default:
-            this.eight_or_more_letter_words.push(word)
+            this.acceptedSevenPlusLettersWords.push(word)
             break;
         }
       }
     },
-    canCreateWord() {
-      return this.accepted_words.length > 0
+
+    async loadWordlist() {
+      this.filteredWords = await require('../wordlist.json'); 
     },
-    async loadSAOLDictionary() {
-      this.filtered_words = await require('../wordlist.json'); 
-    },
+
     getMaxWordLength() {
-      return this.message.length + this.beginsWith.length + this.endWith.length;
+      return this.inputLetters.length + this.advancedStartLetters.length + this.advancedEndingLetters.length;
     },
+
     clearLists() {
-      this.two_letter_words = []
-      this.three_letter_words = []
-      this.four_letter_words = []
-      this.five_letter_words = []
-      this.six_letter_words = []
-      this.seven_letter_words = []
-      this.eight_or_more_letter_words = []
+      this.acceptedTwoLetterWords = []
+      this.acceptedThreeLetterWords = []
+      this.acceptedFourLetterWords = []
+      this.acceptedFiveLetterWords = []
+      this.acceptedSixLetterWords = []
+      this.acceptedSevenLetterWords = []
+      this.acceptedSevenPlusLettersWords = []
     },
+
+    filterWordlist() {
+      this.filteredWords = this.filteredWords.filter(word => (
+        word.length <= this.getMaxWordLength() && word.length > 1)
+      );
+      this.filteredWords = this.filteredWords.map(word => {
+        return word.toUpperCase();
+      });
+    },
+
     getWords() {
-      if(!this.message) {
+      if(!this.inputLetters) {
         return;
       }
+      this.letters               = this.inputLetters.toUpperCase();
+      this.advancedStartLetters  = this.advancedStartLetters.toUpperCase();
+      this.advancedEndingLetters = this.advancedEndingLetters.toUpperCase();
+      this.filterWordlist();
       this.clearLists();
-      this.MAX_WORD_LENGTH = this.getMaxWordLength();
-      this.letters = this.message.toUpperCase();
-      this.beginsWith = this.beginsWith.toUpperCase();
-      this.endWith = this.endWith.toUpperCase();
-      this.filtered_words = this.filtered_words.filter(word => word.length <= this.MAX_WORD_LENGTH && word.length > 1);
-      this.filtered_words = this.filtered_words.map(word => {
-        return word.toUpperCase();
-      })
       this.getWordsContainingLetters();
-      this.filtered_words = this.loadSAOLDictionary();
+      this.filteredWords = this.loadWordlist();
 
     },
   },

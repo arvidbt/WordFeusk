@@ -209,12 +209,44 @@ html, body {
   box-shadow: 5px 5px #0082F0; */
 }
 
+.performance-button-wrapper {
+  width: 100%;
+  background-color: #0082F0;
+  display: flex;
+  align-items: center;
+  border-radius: 7.5px;
+  margin-top: -10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  overflow: hidden;
+  /* position: fixed; */
+  transition: 0.3s ease-in-out;
+}
+
+.performance-button {
+  background: #199EF3;
+  color: #fff;
+  width: 100%;
+  /* color: #F1C40F; */
+  font-size: 14px;
+  font-style: italic;
+  font-weight: bold;
+  font-family: 'Roboto', sans-serif;
+  border: none;
+  border-radius: 7.5px;
+  padding: 15px;
+  margin-top: -10px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
 .word-container:hover {
   cursor: pointer;
 }
 
 ::-webkit-scrollbar {
   width: 10px;
+  border-radius: 7.5px;
 }
 
 ::-webkit-scrollbar-track {

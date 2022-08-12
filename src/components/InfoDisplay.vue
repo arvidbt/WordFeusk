@@ -16,6 +16,12 @@
       &nbsp;&nbsp;<span style="color: #F1C40F;">EXEMPELVIS</span>: <span style="color: #F1C40F;">ST</span> AR <span style="color: #F1C40F;">T</span> KOMMER BARA GE ORDET <span style="color: #F1C40F;">START</span>.
       
     </span><br><br>
+    <span style="color: #F1C40F">-</span> PRESTANDALÄGE.<br>
+    <span style="font-size: 10px;color: #B9DEFE;">
+      &nbsp;&nbsp;OM WORDFEUSK UPPLEVS <span style="color: #F1C40F">LÅNGSAMT</span> KAN DET DU<br>
+      &nbsp;&nbsp;STÄLLA IN <span style="color: #F1C40F">PRESTANDALÄGE</span>. I DETTA LÄGE LADDAS<br>
+      &nbsp;&nbsp;ORD BARA NÄR DU SKRIVIT IN <span style="color: #F1C40F">ALLA</span> DIN BOKSTÄVER.
+    </span><br><br>
     <span style="color: #F1C40F">-</span> SKAPAD AV ARVID BERGMAN.<br>
     <span style="font-size: 10px;color: #B9DEFE;">
       &nbsp;&nbsp;FÖR ATT SE KÄLLKOD, SE <span style="color: #F1C40F" @click="this.redirectGithub()">GITHUB</span>.<br>

@@ -7,10 +7,13 @@
       <svg class="search-button" @click="toggleAdvancedMode()" width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="#fff" stroke-width="2" d="M15,16 L21,22 L15,16 Z M10,18 C13.8659932,18 17,14.8659932 17,11 C17,7.13400675 13.8659932,4 10,4 C6.13400675,4 3,7.13400675 3,11 C3,14.8659932 6.13400675,18 10,18 Z M20,1 L20,7 M17,4 L23,4"/></svg>
       <svg class="search-button" @click="toggleHelp()" style="margin-right: 64px;" width="24px" height="24px" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg" aria-labelledby="helpIconTitle" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" color="#000000"> <title id="helpIconTitle">Help</title> <path d="M12 14C12 12 13.576002 11.6652983 14.1186858 11.1239516 14.663127 10.5808518 15 9.82976635 15 9 15 7.34314575 13.6568542 6 12 6 11.1040834 6 10.2998929 6.39272604 9.75018919 7.01541737 9.49601109 7.30334431 9.29624369 7.64043912 9.16697781 8.01061095"/> <line x1="12" y1="17" x2="12" y2="17"/> <circle cx="12" cy="12" r="10"/> </svg>
     </div>
-    <div class="info-container" :class="[!this.showHelp ? 'info-hidden' : 'info-shown']" :style="[{'height' : !this.showHelp ? '0px' : '250px'}]">
+    <div class="info-container" :class="[!this.showHelp ? 'info-hidden' : 'info-shown']" :style="[{'height' : !this.showHelp ? '0px' : '325px'}]">
       <!-- style="margin-top: -10px;" -->
       <!-- :style="[{'height' : !this.showHelp ? '0px' : '200px'}]" -->
       <info-display/>
+    </div>
+    <div v-if="this.showHelp" class="performance-button-wrapper">
+      <button class="performance-button" ref="btnToggle" @click="togglePerformanceMode()">{{ this.performanceModeText }}.</button>
     </div>
     <div class="footer-container">
       <input autocomplete="off" v-show="this.showAdvancedSearch" type="text" id="begin-input" class="adv-search-box" style="margin-left: 15px;" v-model="advancedStartLetters" placeholder="BÖRJAR MED"/>
@@ -66,7 +69,7 @@ const TWO_POINTS    = ['G', 'L', 'O'];
 const THREE_POINTS  = ['B', 'F', 'H', 'K', 'M', 'V'];
 const FOUR_POINTS   = ['P', 'U', 'Å', 'Ä', 'Ö'];
 const SEVEN_POINTS  = ['J', 'Y'];
-const EIGHT_POINTS  = ['C','X', 'Z']
+const EIGHT_POINTS  = ['C','X', 'Z'];
 
 export default {
   name: 'App',
@@ -76,10 +79,13 @@ export default {
   },
 
   mounted() {
+    // console.log(this.$isMobile());
+    this.callback = () => { this.getWords(); }
+    this.performanceModeText = 'AKTIVERA PRESTANDALÄGE';
     this.loadWordlist();
-    this.registerEventListener('letter-input');
-    this.registerEventListener('begin-input');
-    this.registerEventListener('end-input');
+    this.registerEventListener('letter-input', 'input');
+    this.registerEventListener('begin-input', 'input');
+    this.registerEventListener('end-input', 'input');
   },
   data() {
     return {
@@ -98,16 +104,44 @@ export default {
       acceptedSevenPlusLettersWords: [],
       showAdvancedSearch:            false,
       showHelp:                      false,
+      performanceMode:               false,
       advancedStart:                 false,
       advancedEnd:                   false,
       advancedStartAndEnd:           false,
+      callback:                      null,
+      performanceModeText:           '',
     }
   },
   methods:  {
-    registerEventListener(id) {
-      document.getElementById(id).addEventListener('input', () => {
-        this.getWords();
-      })
+
+    registerEventListener(id, eventListener) {
+      document.getElementById(id).addEventListener(eventListener, this.callback)
+    },
+
+    unregisterEventListener(id, eventListener) {
+      document.getElementById(id).removeEventListener(eventListener, this.callback);
+    },
+
+    togglePerformanceMode() {
+      this.performanceMode = !this.performanceMode;
+      this.performanceModeText = this.performanceMode ? 'AV-AKTIVERA PRESTANDALÄGE' : 'AKTIVERA PRESTANDALÄGE';
+      // this.$refs.btnToggle = this.performanceMode ? 'Av-aktivera prestandaläge' : 'Aktivera prestandaläge';
+      if(this.performanceMode) {
+        this.unregisterEventListener('letter-input', 'input');
+        this.unregisterEventListener('begin-input', 'input');
+        this.unregisterEventListener('end-input', 'input');
+        this.registerEventListener('letter-input', 'change');
+        this.registerEventListener('begin-input', 'change');
+        this.registerEventListener('end-input', 'change');
+      }
+      else {
+        this.unregisterEventListener('letter-input', 'change');
+        this.unregisterEventListener('begin-input', 'change');
+        this.unregisterEventListener('end-input', 'change');
+        this.registerEventListener('letter-input', 'input');
+        this.registerEventListener('begin-input', 'input');
+        this.registerEventListener('end-input', 'input');
+      }
     },
 
     toggleAdvancedMode() {
@@ -289,12 +323,12 @@ export default {
     },
 
     clearLists() {
-      this.acceptedTwoLetterWords = []
-      this.acceptedThreeLetterWords = []
-      this.acceptedFourLetterWords = []
-      this.acceptedFiveLetterWords = []
-      this.acceptedSixLetterWords = []
-      this.acceptedSevenLetterWords = []
+      this.acceptedTwoLetterWords        = []
+      this.acceptedThreeLetterWords      = []
+      this.acceptedFourLetterWords       = []
+      this.acceptedFiveLetterWords       = []
+      this.acceptedSixLetterWords        = []
+      this.acceptedSevenLetterWords      = []
       this.acceptedSevenPlusLettersWords = []
     },
 
